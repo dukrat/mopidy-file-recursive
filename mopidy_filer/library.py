@@ -169,7 +169,7 @@ class FileRLibraryProvider(backend.LibraryProvider):
             for media_dir in self._media_dirs)
 
 
-    def _path_to_uri(path):
+    def _path_to_uri(self, path):
         if isinstance(path, compat.text_type):
             path = path.encode('utf-8')
         path = urllib.parse.quote(path)
