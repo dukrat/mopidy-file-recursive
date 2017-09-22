@@ -26,7 +26,7 @@ class FileRLibraryProvider(backend.LibraryProvider):
         if not self._media_dirs:
             return None
         elif len(self._media_dirs) == 1:
-            uri = path.path_to_uri(self._media_dirs[0]['path'])
+            uri = self._path_to_uri(self._media_dirs[0]['path'])
         else:
             uri = 'filer:root'
         return models.Ref.directory(name='Files Recurse', uri=uri)
@@ -60,7 +60,7 @@ class FileRLibraryProvider(backend.LibraryProvider):
 
         for dir_entry in os.listdir(local_path):
             child_path = os.path.join(local_path, dir_entry)
-            uri = path.path_to_uri(child_path)
+            uri = self._path_to_uri(child_path)
 
             if not self._show_dotfiles and dir_entry.startswith(b'.'):
                 continue
@@ -160,10 +160,18 @@ class FileRLibraryProvider(backend.LibraryProvider):
         for media_dir in self._media_dirs:
             yield models.Ref.directory(
                 name=media_dir['name'],
-                uri=path.path_to_uri(media_dir['path']))
+                uri=self._path_to_uri(media_dir['path']))
 
     def _is_in_basedir(self, local_path):
         return any(
             path.is_path_inside_base_dir(
                 local_path, media_dir['path'].encode('utf-8'))
             for media_dir in self._media_dirs)
+
+
+    def _path_to_uri(path):
+        if isinstance(path, compat.text_type):
+            path = path.encode('utf-8')
+        path = urllib.parse.quote(path)
+        return urllib.parse.urlunsplit((b'filer', b'', path, b'', b''))
+
