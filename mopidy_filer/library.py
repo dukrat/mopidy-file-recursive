@@ -6,9 +6,10 @@ import os
 import sys
 import urllib2
 
-from mopidy import backend, exceptions, models
+from mopidy import backend, exceptions, models, compat
 from mopidy.audio import scan, tags
 from mopidy.internal import path
+from mopidy.compat import urllib
 
 
 logger = logging.getLogger(__name__)
